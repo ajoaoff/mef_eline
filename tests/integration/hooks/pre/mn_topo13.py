@@ -5,7 +5,7 @@ from mininet.cli import CLI
 from mininet.util import waitListening
 import time, datetime
 import pytest
-from .utils import ping, rule_schedule
+from napps.mef_eline.tests.integration.pre.utils import ping, rule_schedule
 
 @pytest.fixture(scope='module')
 def network():
