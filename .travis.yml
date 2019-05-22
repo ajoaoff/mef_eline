@@ -1,0 +1,13 @@
+language: python
+dist: xenial
+before_install:
+  - sudo add-apt-repository ppa:nbritton/openvswitch -y
+  - sudo apt update -q
+  - sudo apt install mininet -y
+  - sudo pip install pytest
+install:
+  - pip install -r requirements/dev.txt
+  - chmod +x tests/integration/run_tests.sh
+  - chmod +x tests/integration/tests/*
+script:
+  - python tests/integration/run.py
