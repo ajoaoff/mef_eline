@@ -4,7 +4,7 @@ before_install:
   - sudo add-apt-repository ppa:nbritton/openvswitch -y
   - sudo apt update -q
   - sudo apt install mininet -y
-  - sudo pip install pytest pathblib
+  - sudo pip install pytest pathlib
 install:
   - pip install -r requirements/dev.txt
   - chmod +x tests/integration/run_tests.sh
