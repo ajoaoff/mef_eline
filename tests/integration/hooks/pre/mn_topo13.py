@@ -222,6 +222,8 @@ def test_link_down(network):
     min = now.minute
     assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
 
+    network.configLinkStatus('s5', 's4', 'down')
+
 
 def test_link_protection_backup(network):
     hosts = {}
