@@ -199,8 +199,8 @@ class Main(KytosNApp):
             except ValueError as _exception:
                 log.debug(f'{data.get("id")} can not be provisioning yet.')
                 continue
-
-            evc.handle_link_up(event.content['link'])
+            if evc.is_active():
+                evc.handle_link_up(event.content['link'])
 
     @listen_to('kytos/topology.link_down')
     def handle_link_down(self, event):
