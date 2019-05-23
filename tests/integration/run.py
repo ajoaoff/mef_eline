@@ -16,7 +16,7 @@ def run():
     subprocess.run(['kytos', 'napps', 'enable', 'kytos/of_core'])
     subprocess.run(['kytos', 'napps', 'enable', 'kytos/mef_eline'])
     sleep(5)
-    mininet = subprocess.Popen(['sudo', 'pytest', '-k', '"test"', 'tests/integration/hooks/pre/mn_topo13.py'])
+    mininet = subprocess.Popen(['sudo', 'pytest', 'tests/integration/hooks/pre/mn_topo13.py'])
     sleep(10)
     subprocess.run(['tests/integration/run_tests.sh'])
     returncode = mininet.wait()
