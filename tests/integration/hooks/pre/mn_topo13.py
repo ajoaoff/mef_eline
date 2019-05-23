@@ -223,6 +223,76 @@ def test_link_down(network):
     assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
 
 
+def test_link_protection_backup(network):
+    hosts = {}
+    for host in network.hosts:
+        hosts[host.name] = host
+
+    switches = {}
+    for switch in network.switches:
+        switches[switch.name] = switch
+
+    network.configLinkStatus('s5', 's6', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+
+    network.configLinkStatus('s5', 's2', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+
+    network.configLinkStatus('s5', 's6', 'up')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+    network.configLinkStatus('s5', 's4', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+    network.configLinkStatus('s5', 's2', 'up')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+    network.configLinkStatus('s6', 's1', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+    network.configLinkStatus('s5', 's4', 'up')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+
+    network.configLinkStatus('s1', 's6', 'up')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(30)
+
+
 def rule_schedule(start, stop, div):
     def wrapper(min):
         if stop > start:
