@@ -5,7 +5,6 @@ from mininet.cli import CLI
 from mininet.util import waitListening
 import time, datetime
 import pytest
-from tests.integration.hooks.pre.utils import ping, rule_schedule
 
 @pytest.fixture(scope='module')
 def network():
@@ -222,3 +221,23 @@ def test_link_down(network):
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
+
+
+def rule_schedule(start, stop, div):
+    def wrapper(min):
+        if stop > start:
+            return start <= min % div < stop
+        else:
+            return min % div < start or min % div >= stop
+
+    return wrapper
+
+
+def ping(host1, host2, rule, min):
+    out = host1.cmd('ping -c 1 %s' % host2.IP())
+    index = out.find('received')
+    ret = out[index - 2]
+    if rule(min):
+        return ret == '1'
+    else:
+        return ret == '0'
