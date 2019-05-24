@@ -234,6 +234,7 @@ def test_link_protection_backup(network):
     for switch in network.switches:
         switches[switch.name] = switch
 
+    time.sleep(120)
     network.configLinkStatus('s5', 's6', 'down')
     time.sleep(1)
     now = datetime.datetime.now()

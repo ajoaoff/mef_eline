@@ -18,7 +18,7 @@ class StoreHouse:
 
     def __init__(self, controller):
         """Create a storehouse instance."""
-        log.info('Initialing storehouse')
+        log.info('Initializing storehouse')
         self.controller = controller
         self.namespace = 'kytos.mef_eline.circuits'
         if 'box' not in self.__dict__:
