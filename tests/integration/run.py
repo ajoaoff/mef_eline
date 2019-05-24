@@ -9,6 +9,7 @@ def run():
     subprocess.run(['bash', 'tests/integration/of_core.sh'])
     subprocess.run(['kytos', 'napps', 'disable', 'kytos/mef_eline'])
     subprocess.run(['kytos', 'napps', 'install', 'kytos/pathfinder'])
+    subprocess.run(['kytos', 'napps', 'enable', 'kytos/of_lldp'])
     subprocess.run(['kytos', 'napps', 'enable', 'kytos/topology'])
     subprocess.run(['kytos', 'napps', 'enable', 'kytos/storehouse'])
     subprocess.run(['kytos', 'napps', 'install', 'kytos/flow_manager'])
