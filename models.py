@@ -204,6 +204,7 @@ class EVCBase(GenericEntity):
         self.owner = kwargs.get('owner', None)
         self.priority = kwargs.get('priority', 0)
         self.circuit_scheduler = kwargs.get('circuit_scheduler', [])
+        self.schedule_active = False
 
         self.current_links_cache = set()
         self.primary_links_cache = set()
@@ -442,6 +443,16 @@ class EVCDeploy(EVCBase):
         if self.primary_path.status is EntityStatus.UP:
             return self.deploy_to_path(self.primary_path)
         return False
+
+    def schedule_deploy(self):
+        """Set called by schedule and call deploy."""
+        self.schedule_active = True
+        self.deploy()
+
+    def schedule_remove(self):
+        """Set called by schedule and call remove."""
+        self.schedule_active = False
+        self.remove()
 
     def deploy(self):
         """Deploy EVC to best path.
