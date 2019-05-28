@@ -339,6 +339,7 @@ class EVCBase(GenericEntity):
         evc_dict['enabled'] = self.is_enabled()
         evc_dict['archived'] = self.archived
         evc_dict['priority'] = self.priority
+        evc_dict['schedule_active'] = self.schedule_active
 
         return evc_dict
 
