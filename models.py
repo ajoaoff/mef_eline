@@ -204,7 +204,7 @@ class EVCBase(GenericEntity):
         self.owner = kwargs.get('owner', None)
         self.priority = kwargs.get('priority', 0)
         self.circuit_scheduler = kwargs.get('circuit_scheduler', [])
-        self.schedule_active = False
+        self.schedule_active = kwargs.get('schedule_active', False)
 
         self.current_links_cache = set()
         self.primary_links_cache = set()
