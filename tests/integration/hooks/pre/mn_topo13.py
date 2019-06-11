@@ -242,7 +242,7 @@ def test_link_protection_backup(network):
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
 
     network.configLinkStatus('s5', 's2', 'down')
     time.sleep(1)
@@ -250,7 +250,7 @@ def test_link_protection_backup(network):
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
 
     network.configLinkStatus('s5', 's6', 'up')
     time.sleep(1)
@@ -258,44 +258,42 @@ def test_link_protection_backup(network):
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
     network.configLinkStatus('s5', 's4', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
     network.configLinkStatus('s5', 's2', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
     network.configLinkStatus('s6', 's1', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
     network.configLinkStatus('s5', 's4', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
-    time.sleep(30)
+    time.sleep(29)
 
     network.configLinkStatus('s1', 's6', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
     min = now.minute
     assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
-
-    time.sleep(30)
-
+    
 
 def test_test2(network):
     hosts = {}
