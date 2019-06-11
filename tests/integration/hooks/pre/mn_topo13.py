@@ -296,6 +296,68 @@ def test_link_protection_backup(network):
     time.sleep(30)
 
 
+def test_test2(network):
+    hosts = {}
+    for host in network.hosts:
+        hosts[host.name] = host
+
+    switches = {}
+    for switch in network.switches:
+        switches[switch.name] = switch
+
+    time.sleep(60)
+    now = datetime.datetime.now()
+    min = now.minute
+    sec = now.second
+    if min % 2:
+        time.sleep(120 - sec)
+    else:
+        time.sleep(60 - sec)
+
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(60)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(60)
+    network.configLinkStatus('s5', 's6', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(59)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(60)
+    network.configLinkStatus('s5', 's6', 'up')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(59)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    network.configLinkStatus('s5', 's6', 'down')
+    time.sleep(1)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
+    time.sleep(59)
+    now = datetime.datetime.now()
+    min = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+
 def rule_schedule(start, stop, div):
     def wrapper(min):
         if stop > start:
