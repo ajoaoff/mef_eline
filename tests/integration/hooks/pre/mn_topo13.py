@@ -183,13 +183,13 @@ def test_pings(network):
         assert ping(hosts['h431'], hosts['h213'], rule_schedule(0, 4, 2), min) is True
 
         # Test4
-        assert ping(hosts['h611'], hosts['h211'], rule_schedule(0, 45, 60), min) is True
+        #assert ping(hosts['h611'], hosts['h211'], rule_schedule(0, 45, 60), min) is True
 
         # Test5
         assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
 
         # Test6
-        assert ping(hosts['h421'], hosts['h623'], rule_schedule(0, 8, 10), min) is True
+        #assert ping(hosts['h421'], hosts['h623'], rule_schedule(0, 8, 10), min) is True
 
         time.sleep(60)
         min += 1
