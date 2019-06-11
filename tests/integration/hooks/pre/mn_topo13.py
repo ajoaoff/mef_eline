@@ -192,7 +192,8 @@ def test_pings(network):
         #assert ping(hosts['h421'], hosts['h623'], rule_schedule(0, 8, 10), min) is True
 
         time.sleep(60)
-        min += 1
+        now = datetime.datetime.now()
+        min = now.minute
 
 
 def test_link_down(network):
