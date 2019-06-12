@@ -168,32 +168,32 @@ def test_pings(network):
     sec = now.second
     time.sleep(60 - sec)
     now = datetime.datetime.now()
-    min = now.minute
+    minute = now.minute
     sec = now.second
-    print('%d minutes and %d seconds' % (min, sec))
+    print('%d minutes and %d seconds' % (minute, sec))
 
     for i in range(10):
         # Test1
-        assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
+        assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), minute) is True
 
         # Test2
-        assert ping(hosts['h321'], hosts['h612'], rule_schedule(0, 2, 3), min) is True
+        assert ping(hosts['h321'], hosts['h612'], rule_schedule(0, 2, 3), minute) is True
 
         # Test3
-        assert ping(hosts['h431'], hosts['h213'], rule_schedule(0, 4, 2), min) is True
+        assert ping(hosts['h431'], hosts['h213'], rule_schedule(0, 4, 2), minute) is True
 
         # Test4
         #assert ping(hosts['h611'], hosts['h211'], rule_schedule(0, 45, 60), min) is True
 
         # Test5
-        assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+        assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
         # Test6
         #assert ping(hosts['h421'], hosts['h623'], rule_schedule(0, 8, 10), min) is True
 
         time.sleep(60)
         now = datetime.datetime.now()
-        min = now.minute
+        minute = now.minute
 
 
 def test_link_down(network):
@@ -208,20 +208,20 @@ def test_link_down(network):
     network.configLinkStatus('s1', 's4', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), minute) is True
 
     network.configLinkStatus('s5', 's4', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is False
+    minute = now.minute
+    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), minute) is False
 
     network.configLinkStatus('s1', 's4', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h111'], hosts['h422'], rule_schedule(0, 4, 2), minute) is True
 
     network.configLinkStatus('s5', 's4', 'up')
 
@@ -239,61 +239,61 @@ def test_link_protection_backup(network):
     network.configLinkStatus('s5', 's6', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
 
     network.configLinkStatus('s5', 's2', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
 
     network.configLinkStatus('s5', 's6', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
     network.configLinkStatus('s5', 's4', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
     network.configLinkStatus('s5', 's2', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
     network.configLinkStatus('s6', 's1', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
     network.configLinkStatus('s5', 's4', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(29)
 
     network.configLinkStatus('s1', 's6', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
-    
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
+
 
 def test_test2(network):
     hosts = {}
@@ -306,63 +306,63 @@ def test_test2(network):
 
     time.sleep(60)
     now = datetime.datetime.now()
-    min = now.minute
+    minute = now.minute
     sec = now.second
-    if min % 2:
+    if minute % 2:
         time.sleep(120 - sec)
     else:
         time.sleep(60 - sec)
 
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(60)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(60)
     network.configLinkStatus('s5', 's6', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(59)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(60)
     network.configLinkStatus('s5', 's6', 'up')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(59)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     network.configLinkStatus('s5', 's6', 'down')
     time.sleep(1)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
     time.sleep(59)
     now = datetime.datetime.now()
-    min = now.minute
-    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), min) is True
+    minute = now.minute
+    assert ping(hosts['h414'], hosts['h311'], rule_schedule(0, 1, 2), minute) is True
 
 def rule_schedule(start, stop, div):
-    def wrapper(min):
+    def wrapper(minute):
         if stop > start:
-            return start <= min % div < stop
+            return start <= minute % div < stop
         else:
-            return min % div < start or min % div >= stop
+            return minute % div < start or minute % div >= stop
 
     return wrapper
 
