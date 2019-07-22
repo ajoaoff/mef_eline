@@ -7,10 +7,11 @@ import requests
 from kytos.core import log
 from kytos.core.common import EntityStatus, GenericEntity
 from kytos.core.helpers import get_time, now
-from kytos.core.interface import UNI
+from kytos.core.interface import UNI, TAG
 from kytos.core.link import Link
 from napps.kytos.mef_eline import settings
 from napps.kytos.mef_eline.storehouse import StoreHouse
+from napps.kytos.mef_eline.scheduler import CircuitSchedule, Scheduler
 
 
 class Path(list, GenericEntity):
@@ -204,9 +205,6 @@ class EVCBase(GenericEntity):
         self.owner = kwargs.get('owner', None)
         self.priority = kwargs.get('priority', 0)
         self.circuit_scheduler = kwargs.get('circuit_scheduler', [])
-        self.schedule_active = kwargs.get('schedule_active', False)
-        if not self.circuit_scheduler:
-            self.schedule_active = True
 
         self.current_links_cache = set()
         self.primary_links_cache = set()
@@ -214,7 +212,8 @@ class EVCBase(GenericEntity):
 
         self.archived = kwargs.get('archived', False)
 
-        self._storehouse = StoreHouse(controller)
+        self._controller = controller
+        self._storehouse = StoreHouse(self._controller)
 
         if kwargs.get('active', False):
             self.activate()
@@ -239,7 +238,7 @@ class EVCBase(GenericEntity):
     def update(self, **kwargs):
         """Update evc attributes.
 
-        This method will raises an error trying to change the following
+        This method will raise an error trying to change the following
         attributes: [name, uni_a and uni_z]
 
         Raises:
@@ -250,7 +249,9 @@ class EVCBase(GenericEntity):
             if attribute in self.unique_attributes:
                 raise ValueError(f'{attribute} can\'t be be updated.')
             if hasattr(self, attribute):
-                setattr(self, attribute, value)
+                setattr(self, attribute,
+                        self.attribute_from_dict(
+                            self._controller, attribute, value))
             else:
                 raise ValueError(f'The attribute "{attribute}" is invalid.')
         self.sync()
@@ -341,9 +342,87 @@ class EVCBase(GenericEntity):
         evc_dict['enabled'] = self.is_enabled()
         evc_dict['archived'] = self.archived
         evc_dict['priority'] = self.priority
-        evc_dict['schedule_active'] = self.schedule_active
 
         return evc_dict
+
+    @classmethod
+    def from_dict(cls, controller, evc_dict):
+        """Convert some dict values to instance of EVC classes.
+
+        This method will convert: [UNI, Link]
+        """
+        data = evc_dict.copy()  # Do not modify the original dict
+
+        for attribute, value in data.items():
+            data[attribute] = \
+                cls.attribute_from_dict(controller, attribute, value)
+        return cls(controller, **data)
+
+    @staticmethod
+    def attribute_from_dict(controller, attribute, value):
+        if 'uni' in attribute:
+            try:
+                return EVCBase.uni_from_dict(controller, value)
+            except ValueError as exc:
+                raise ValueError(f'Error creating UNI: {exc}')
+
+        if attribute == 'circuit_scheduler':
+            scheduler = []
+            for schedule in value:
+                scheduler.append(CircuitSchedule.from_dict(schedule))
+            return scheduler
+
+        if 'link' in attribute:
+            if value:
+                return EVCBase.link_from_dict(controller, value)
+
+        if 'path' in attribute and attribute != 'dynamic_backup_path':
+            if value:
+                return Path([EVCBase.link_from_dict(controller, link)
+                             for link in value])
+        return value
+
+    @staticmethod
+    def uni_from_dict(controller, uni_dict):
+        """Return a UNI object from python dict."""
+        if uni_dict is None:
+            return False
+
+        interface_id = uni_dict.get("interface_id")
+        interface = controller.get_interface_by_id(interface_id)
+        if interface is None:
+            raise ValueError(f'Could not instantiate interface {interface_id}')
+
+        tag_dict = uni_dict.get("tag")
+        tag = TAG.from_dict(tag_dict)
+        if tag is False:
+            raise ValueError(f'Could not instantiate tag from dict {tag_dict}')
+
+        uni = UNI(interface, tag)
+
+        return uni
+
+    @staticmethod
+    def link_from_dict(controller, link_dict):
+        """Return a Link object from python dict."""
+        id_a = link_dict.get('endpoint_a').get('id')
+        id_b = link_dict.get('endpoint_b').get('id')
+
+        endpoint_a = controller.get_interface_by_id(id_a)
+        endpoint_b = controller.get_interface_by_id(id_b)
+
+        link = Link(endpoint_a, endpoint_b)
+        if 'metadata' in link_dict:
+            link.extend_metadata(link_dict.get('metadata'))
+
+        s_vlan = link.get_metadata('s_vlan')
+        if s_vlan:
+            tag = TAG.from_dict(s_vlan)
+            if tag is False:
+                error_msg = f'Could not instantiate tag from dict {s_vlan}'
+                raise ValueError(error_msg)
+            link.update_metadata('s_vlan', tag)
+        return link
 
     @property
     def id(self):  # pylint: disable=invalid-name
@@ -446,16 +525,6 @@ class EVCDeploy(EVCBase):
         if self.primary_path.status is EntityStatus.UP:
             return self.deploy_to_path(self.primary_path)
         return False
-
-    def schedule_deploy(self):
-        """Set called by schedule and call deploy."""
-        self.schedule_active = True
-        self.deploy()
-
-    def schedule_remove(self):
-        """Set called by schedule and call remove."""
-        self.schedule_active = False
-        self.remove()
 
     def deploy(self):
         """Deploy EVC to best path.
@@ -807,6 +876,9 @@ class LinkProtection(EVCDeploy):
         if success:
             log.debug(f"{self} deployed after link down.")
         else:
+            self.deactivate()
+            self.current_path = Path([])
+            self.sync()
             log.debug(f'Failed to re-deploy {self} after link down.')
 
         return success

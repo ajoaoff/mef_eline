@@ -60,9 +60,9 @@ class Scheduler:
             action = None
 
             if circuit_scheduler.action == 'create':
-                action = circuit.schedule_deploy
+                action = circuit.deploy
             elif circuit_scheduler.action == 'remove':
-                action = circuit.schedule_remove
+                action = circuit.remove
 
             if circuit_scheduler.date:
                 data.update({'run_date': circuit_scheduler.date})
@@ -79,6 +79,11 @@ class Scheduler:
                 cron = CronTrigger.from_crontab(circuit_scheduler.frequency,
                                                 timezone=utc)
                 self.scheduler.add_job(action, cron, **data)
+
+    def remove(self, circuit):
+        """Remove all scheduler from a circuit."""
+        for job in circuit.circuit_scheduler:
+            self.cancel_job(job.id)
 
     def cancel_job(self, circuit_scheduler_id):
         """Cancel a specific job from scheduler."""
