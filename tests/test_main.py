@@ -1276,3 +1276,33 @@ class TestMain(TestCase):
         self.napp.circuits = dict(zip(['1', '2', '3'], evcs))
         self.napp.handle_link_down(event)
         evc_mock.handle_link_down.assert_has_calls([call(), call()])
+
+    @patch('napps.kytos.mef_eline.main.UNI')
+    @patch('napps.kytos.mef_eline.main.TAG.from_dict')
+    def test_uni_from_dict(self, tag_from_dict_mock, uni_mock):
+        # pylint: disable=protected-access
+        """Test _uni_from_dict method."""
+        retval = self.napp._uni_from_dict(None)
+        self.assertFalse(retval)
+
+        tag_from_dict_mock.side_effect = ['VLAN 345', False]
+        uni_mock.side_effect = lambda x, y: f'{x} - {y}'
+        intf_by_id_mock = MagicMock(
+            side_effect=['Interface 2', None, 'Interface 2'])
+        self.napp.controller.get_interface_by_id = intf_by_id_mock
+        uni1 = {
+            'interface_id': '00:00:00:00:00:00:00:01:2',
+            'tag': {
+                'tag_type': 1,
+                'value': 345
+            }
+        }
+
+        retval = self.napp._uni_from_dict(uni1)
+        intf_by_id_mock.assert_called_once_with('00:00:00:00:00:00:00:01:2')
+        tag_from_dict_mock.assert_called_once()
+        uni_mock.assert_called_once_with('Interface 2', 'VLAN 345')
+        self.assertEqual(retval, 'Interface 2 - VLAN 345')
+
+        self.assertRaises(ValueError, self.napp._uni_from_dict, uni1)
+        self.assertRaises(ValueError, self.napp._uni_from_dict, uni1)
