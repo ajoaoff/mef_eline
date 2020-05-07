@@ -29,4 +29,3 @@ virtualenv==16.0.0        # via tox
 wrapt==1.10.11            # via astroid
 requests==2.21.0
 yala==1.7.0
-python-coveralls
