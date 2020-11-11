@@ -526,6 +526,21 @@ class Main(KytosNApp):
                         evc.deploy()
                     self.sched.add(evc)
 
+    @listen_to('kytos/flow_manager.flow.error')
+    def handle_flow_mod_error(self, event):
+        """Handle flow mod errors related to an EVC."""
+        flow = event.content['flow']
+        command = event.content.get('error_command')
+        if command is None:
+            return
+        log.info(f'Flow error: {flow.cookie}')
+        if command != 'add':
+            return
+        evc_id = hex(flow.cookie).lstrip('0x').rstrip('L')
+        evc = self.circuits.get(evc_id)
+        if evc:
+            evc.remove_current_flows()
+
     def _evc_dict_with_instances(self, evc_dict):
         """Convert some dict values to instance of EVC classes.
 

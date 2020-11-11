@@ -3,6 +3,8 @@ import json
 from unittest import TestCase
 from unittest.mock import MagicMock, PropertyMock, patch, create_autospec, call
 
+from pyof.v0x04.controller2switch.flow_mod import FlowModCommand
+
 from kytos.core.interface import UNI, Interface
 from kytos.core.events import KytosEvent
 
@@ -1280,3 +1282,31 @@ class TestMain(TestCase):
         self.napp.circuits = dict(zip(['1', '2', '3'], evcs))
         self.napp.handle_link_down(event)
         evc_mock.handle_link_down.assert_has_calls([call(), call()])
+
+    def test_handle_flow_mod_error(self):
+        """Test handle_flow_mod_error method."""
+        evc_mock = create_autospec(EVC)
+        flow_mock = MagicMock()
+        flow_mock.command = FlowModCommand.OFPFC_ADD
+        flow_mock.cookie = 0x2efa4
+        self.napp.circuits = {'2efa4': evc_mock}
+        event = KytosEvent(name='test',
+                           content={'datapath': '00:00:00:00:00:00:00:01',
+                                    'flow': flow_mock,
+                                    'error_command': 'add'})
+        self.napp.handle_flow_mod_error(event)
+        evc_mock.remove_current_flows.assert_called_once()
+
+    def test_handle_flow_mod_error_no_evc(self):
+        """Test handle_flow_mod_error method."""
+        evc_mock = create_autospec(EVC)
+        flow_mock = MagicMock()
+        flow_mock.command = FlowModCommand.OFPFC_ADD
+        flow_mock.cookie = 0x2efa4
+        self.napp.circuits = {'2efa5': evc_mock}
+        event = KytosEvent(name='test',
+                           content={'datapath': '00:00:00:00:00:00:00:01',
+                                    'flow': flow_mock,
+                                    'error_command': 'add'})
+        self.napp.handle_flow_mod_error(event)
+        evc_mock.remove_current_flows.assert_not_called()
